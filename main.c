@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #define NUM_ACCOUNTS 50
 #define BASE_ACCOUNT_NUM 100
@@ -8,17 +9,26 @@
 typedef struct {
     double balance;
     int isOpen;
+
+    union {
+        struct{
+            int months;
+            double debt;
+            float interest;
+        }loanInfo;
+    };
+    
 } Account;
 
 
 int getIndex(int accountNumber);
-//char userInput();
 void openAccount(Account accounts[], int *openAccounts);
 void deposit(Account accounts[]);
 void withdraw(Account accounts[]);
 void balanceInquiry(Account account[]);
 void computeInterest(Account accounts[]);
 void closeAccount(Account accounts[], int *openAccounts);
+void loan(Account accounts[]);
 void printAllAccounts(Account accounts[]);
 void exitProgram(Account accounts[], int *openAccounts);
 
@@ -42,6 +52,7 @@ int main(){
         printf("W - Withdraw money\n");
         printf("C - Close an account\n");
         printf("I - Compute interest\n");
+        printf("L - Get a loan\n");
         printf("P - Print all accounts\n");
         printf("E - Exit program\n");
         printf("Enter your choice: ");
@@ -76,6 +87,11 @@ int main(){
             case 'I':
             case 'i':
                 computeInterest(accounts);
+                break;
+
+            case 'L':
+            case 'l':
+                loan(accounts);
                 break;
 
             case 'P':
@@ -211,7 +227,78 @@ void closeAccount(Account accounts[], int *openAccounts){
         printf("Account not open or invalid account number.\n");
     }
 }
+//TODO: Apply Loan 
+void loan(Account accounts[]){
+    double annualIncome, loanAmount, additionalAmount;
+    double targetDTI = 0.35;
+    double interestRate = 0.0692;
+    int accountNumber, month;
+    char additionalDept, choice;
 
+    //Request the account info
+    printf("Enter your account number: ");
+    scanf("%d", &accountNumber);
+    int index = getIndex(accountNumber);
+    //getchar();
+
+    if(index != -1 && accounts[index].isOpen){
+        printf("Enter the requested ammount for the loan: ");
+        scanf("%lf", &loanAmount);
+        
+        printf("Enter your annual income: ");
+        scanf("%lf", &annualIncome);
+
+        printf("How long are you thinking to pay? ");
+        scanf("%d", &month); //BUG: What if they put something else except then months 
+
+        printf("Do you have additional dept payments [Y/N]: ");
+        getchar();
+        scanf("%c", &additionalDept);
+        
+        
+        if(additionalDept == 'Y' || additionalDept == 'y'){
+            printf("Enter the monthly amount that you pay: ");
+            scanf("%lf", &additionalAmount);
+        } else {
+            additionalDept = 0.00;
+        }
+
+        //Suggestion: You can devide these to functions to clear the code
+        int currentDTI = additionalAmount/(annualIncome/12);
+
+        if(currentDTI >= targetDTI){
+            printf("You are not eligible for a new loan.\n");
+        } else {
+            printf("You are eligible for a new loan.\n");
+        }
+
+        double loanFactor = (interestRate * pow((1 + interestRate), month)) / (pow((1 + interestRate), month) - 1);
+        double maxLoanAmmount = (annualIncome*targetDTI)/loanFactor;
+        printf("The max amount = %.2lf\n",maxLoanAmmount);
+
+        if(loanAmount <= maxLoanAmmount){
+            printf("You are eligible to get %.2lf.\n", loanAmount);
+            printf("Do you want to get the loan [Y/N]? ");
+            getchar();
+            scanf("%c", &choice);
+
+            if(choice == 'Y' || choice == 'y'){
+                accounts[index].loanInfo.debt = loanAmount+(loanAmount*interestRate);
+                accounts[index].loanInfo.interest = interestRate;
+                accounts[index].loanInfo.months = month;
+
+                printf("Your loan dept = %.2lf\nYour interest rate = %%%.2lf\nMonths left = %d\n", accounts[index].loanInfo.debt, accounts[index].loanInfo.interest*100, accounts[index].loanInfo.months);
+            } else {
+                printf("Ok, no new loan amount added to the account. Exitting...");
+                return;
+            }
+        } else {
+            printf("The amont that you requested is exeeding your max loan amount. Please try again later!\n");
+            return;
+        }
+    }
+}
+//TODO: Compute Interest
 void computeInterest(Account accounts[]){
     double interestRate;
     printf("Enter interest rate (%%): ");
@@ -226,10 +313,15 @@ void computeInterest(Account accounts[]){
 }
 
 void printAllAccounts(Account accounts[]) {
-    printf("Account Number\tBalance\n");
+    const char *headerColor = "\033[1;34m";  // Blue
+    const char *balanceColor = "\033[1;32m";  // Green
+    const char *debtColor = "\033[1;31m";  // Red
+    const char *resetColor = "\033[0m";
+    
+     printf("\033[1;34m%-15s\033[0m \033[1;34m%-15s\033[0m \033[1;34m%-15s\033[0m\n", "Account Number", "Balance", "Dept");
     for (int i = 0; i < NUM_ACCOUNTS; i++) {
         if (accounts[i].isOpen) {
-            printf("%d\t\t$%.2f\n", BASE_ACCOUNT_NUM + i, accounts[i].balance);
+            printf("%-15d \033[1;32m$%-14.2f\033[0m \033[1;31m-$%-14.2f\033[0m\n", BASE_ACCOUNT_NUM + i, accounts[i].balance, accounts[i].loanInfo.debt);
         }
     }
 }
