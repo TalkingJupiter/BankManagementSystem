@@ -298,6 +298,9 @@ void loan(Account accounts[]){
         }
     }
 }
+
+//TODD: 
+
 //TODO: Compute Interest
 void computeInterest(Account accounts[]){
     double interestRate;
