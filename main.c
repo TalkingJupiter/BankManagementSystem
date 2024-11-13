@@ -29,6 +29,7 @@ void balanceInquiry(Account account[]);
 void computeInterest(Account accounts[]);
 void closeAccount(Account accounts[], int *openAccounts);
 void loan(Account accounts[]);
+void loanPaymentCalc(Account accounts[]);
 void printAllAccounts(Account accounts[]);
 void exitProgram(Account accounts[], int *openAccounts);
 
@@ -299,7 +300,21 @@ void loan(Account accounts[]){
     }
 }
 
-//TODD: 
+//TODD: Loan Payment Calculator
+void loanPaymentCalc(Account accounts[]){
+    double amount;
+    int month;
+    double interestRate = 0.0692;
+    printf("Please enter the loan amount: ");
+    scanf("%lf", &amount);
+
+    printf("Enter the total months: ");
+    scanf("%d", &month);
+
+    double monthlyPayments = (amount + (amount*interestRate))/(double)month;
+
+    printf("Estimated payments is %.2lf for %d.", monthlyPayments, month); 
+}
 
 //TODO: Compute Interest
 void computeInterest(Account accounts[]){
