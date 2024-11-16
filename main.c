@@ -363,7 +363,7 @@ void transfer(Account accounts[]){
     if((indexSender != -1 || accounts[indexSender].isOpen)&& (indexReceiver!= -1 || accounts[indexReceiver].isOpen )){
         if(accounts[indexSender].balance >= amount){
             printf("\033[1;32mThe transfer amount is availabe...\033[0m"); //Green
-            printf("Do you want to tranfer %.2lf to account %d [Y/N]? ");
+            printf("Do you want to tranfer %.2lf to account %d [Y/N]? ", amount, accountNumber);
             getchar();
             scanf("%c", &choice);
 
