@@ -29,7 +29,9 @@ void balanceInquiry(Account account[]);
 void computeInterest(Account accounts[]);
 void closeAccount(Account accounts[], int *openAccounts);
 void loan(Account accounts[]);
+void loanPaymentCalc(Account accounts[]);
 void printAllAccounts(Account accounts[]);
+void transfer(Account accounts[]);
 void exitProgram(Account accounts[], int *openAccounts);
 
 int main(){
@@ -53,6 +55,8 @@ int main(){
         printf("C - Close an account\n");
         printf("I - Compute interest\n");
         printf("L - Get a loan\n");
+        printf("M - Payment Calulator\n");
+        printf("T - Money Transfer\n");
         printf("P - Print all accounts\n");
         printf("E - Exit program\n");
         printf("Enter your choice: ");
@@ -64,7 +68,7 @@ int main(){
                 openAccount(accounts, &openAccounts);
                 break;
             
-            case 'b':
+            // case 'b':
             case 'B':
                 balanceInquiry(accounts);
                 break;
@@ -93,7 +97,14 @@ int main(){
             case 'l':
                 loan(accounts);
                 break;
-
+            case 'M':
+            case 'm':
+                loanPaymentCalc(accounts);
+                break;
+            case 'T':
+            case 't':
+                transfer(accounts);
+                break;
             case 'P':
             case 'p':
                 printAllAccounts(accounts);
@@ -298,6 +309,23 @@ void loan(Account accounts[]){
         }
     }
 }
+
+//TODD: Loan Payment Calculator
+void loanPaymentCalc(Account accounts[]){
+    double amount;
+    int month;
+    double interestRate = 0.0692;
+    printf("Please enter the loan amount: ");
+    scanf("%lf", &amount);
+
+    printf("Enter the total months: ");
+    scanf("%d", &month);
+
+    double monthlyPayments = (amount + (amount*interestRate))/(double)month;
+
+    printf("Estimated payments is $%.2lf for %d months.", monthlyPayments, month); 
+}
+
 //TODO: Compute Interest
 void computeInterest(Account accounts[]){
     double interestRate;
@@ -325,7 +353,46 @@ void printAllAccounts(Account accounts[]) {
         }
     }
 }
+//TODO: Money Transfer
+void transfer(Account accounts[]){  
+    double amount;
+    int accountNumber;
+    char choice;
+    printf("Enter the senders account number: ");
+    scanf("%d", &accountNumber);
+    int indexSender = getIndex(accountNumber);
 
+    printf("Enter the receivers account number: ");
+    scanf("%d", &accountNumber);
+    int indexReceiver = getIndex(accountNumber);
+
+    printf("The amount that you want to transfer: ");
+    scanf("%lf", &amount);
+
+    if((indexSender != -1 || accounts[indexSender].isOpen)&& (indexReceiver!= -1 || accounts[indexReceiver].isOpen )){
+        if(accounts[indexSender].balance >= amount){
+            printf("\033[1;32mThe transfer amount is availabe...\033[0m\n"); //Green
+            printf("Do you want to tranfer %.2lf to account %d [Y/N]? ", amount, accountNumber);
+            getchar();
+            scanf("%c", &choice);
+
+            if(choice=='Y' || choice=='y'){
+                printf("\033[1;32mTransfering the money...\033[0m\n"); //Green
+                accounts[indexSender].balance -= amount; 
+                accounts[indexReceiver].balance += amount;
+                printf("\033[1;32mTransfer has been completed...\033[0m\n"); //green
+            } else {
+                printf("\033[1;31mNot transfering the money. Exitting...\033[0m\n"); //red
+            }
+
+        } else { 
+            printf("\033[1;31mNot enough money to transfer...\033[0m\n"); //Red
+        }
+    } else {
+        printf("Unable to transfer the money please make sure that the both accounts are open...\n");
+        return;
+    }
+}
 void exitProgram(Account accounts[], int *openAccounts){
     for(int i = 0; i< NUM_ACCOUNTS; i++){
         accounts[i].isOpen = 0;
