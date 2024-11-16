@@ -55,8 +55,8 @@ int main(){
         printf("C - Close an account\n");
         printf("I - Compute interest\n");
         printf("L - Get a loan\n");
-        printf("M - Payment Calculator");
-        printf("T - Money Transfer");
+        printf("M - Payment Calulator\n");
+        printf("T - Money Transfer\n");
         printf("P - Print all accounts\n");
         printf("E - Exit program\n");
         printf("Enter your choice: ");
@@ -68,7 +68,7 @@ int main(){
                 openAccount(accounts, &openAccounts);
                 break;
             
-            case 'b':
+            // case 'b':
             case 'B':
                 balanceInquiry(accounts);
                 break;
@@ -323,7 +323,7 @@ void loanPaymentCalc(Account accounts[]){
 
     double monthlyPayments = (amount + (amount*interestRate))/(double)month;
 
-    printf("Estimated payments is %.2lf for %d.", monthlyPayments, month); 
+    printf("Estimated payments is $%.2lf for %d months.", monthlyPayments, month); 
 }
 
 //TODO: Compute Interest
@@ -371,25 +371,25 @@ void transfer(Account accounts[]){
 
     if((indexSender != -1 || accounts[indexSender].isOpen)&& (indexReceiver!= -1 || accounts[indexReceiver].isOpen )){
         if(accounts[indexSender].balance >= amount){
-            printf("\033[1;32mThe transfer amount is availabe...\033[0m"); //Green
+            printf("\033[1;32mThe transfer amount is availabe...\033[0m\n"); //Green
             printf("Do you want to tranfer %.2lf to account %d [Y/N]? ", amount, accountNumber);
             getchar();
             scanf("%c", &choice);
 
             if(choice=='Y' || choice=='y'){
-                printf("\033[1;32mTransfering the money...\033[0m"); //Green
+                printf("\033[1;32mTransfering the money...\033[0m\n"); //Green
                 accounts[indexSender].balance -= amount; 
                 accounts[indexReceiver].balance += amount;
-                printf("\033[1;32mTransfer has been completed...\033[0m"); //green
+                printf("\033[1;32mTransfer has been completed...\033[0m\n"); //green
             } else {
-                printf("\033[1;31mNot transfering the money. Exitting...\033[0m"); //red
+                printf("\033[1;31mNot transfering the money. Exitting...\033[0m\n"); //red
             }
 
         } else { 
-            printf("\033[1;31mNot enough money to transfer...\033[0m"); //Red
+            printf("\033[1;31mNot enough money to transfer...\033[0m\n"); //Red
         }
     } else {
-        printf("Unable to transfer the money please make sure that the both accounts are open...");
+        printf("Unable to transfer the money please make sure that the both accounts are open...\n");
         return;
     }
 }
