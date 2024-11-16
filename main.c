@@ -55,6 +55,8 @@ int main(){
         printf("C - Close an account\n");
         printf("I - Compute interest\n");
         printf("L - Get a loan\n");
+        printf("M - Payment Calculator");
+        printf("T - Money Transfer");
         printf("P - Print all accounts\n");
         printf("E - Exit program\n");
         printf("Enter your choice: ");
@@ -95,7 +97,14 @@ int main(){
             case 'l':
                 loan(accounts);
                 break;
-
+            case 'M':
+            case 'm':
+                loanPaymentCalc(accounts);
+                break;
+            case 'T':
+            case 't':
+                transfer(accounts);
+                break;
             case 'P':
             case 'p':
                 printAllAccounts(accounts);
